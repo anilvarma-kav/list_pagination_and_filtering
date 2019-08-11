@@ -10,8 +10,22 @@ document.addEventListener('DOMContentLoaded', () =>{
 
     //Global variables to store the student list object and maximum number of students
     // to be displayed on screen
-    const studentList = document.getElementsByClassName('student-item cf');
+    const ul = document.getElementsByClassName('student-list');
+
     const maxNumber = 10;
+    const headerDiv = document.querySelector('.page-header');
+
+    const searchDiv = document.createElement('div');
+    searchDiv.className = 'student-search';
+    headerDiv.appendChild(searchDiv);
+
+    const searchInput = document.createElement('input');
+    searchInput.placeholder = 'Search for Students....';
+    searchDiv.appendChild(searchInput);
+
+    const searchButton = document.createElement('button');
+    searchButton.textContent = 'Search';
+    searchDiv.appendChild(searchButton);
 
     // showPage() function is used to hide all students and show only particular set of
     // ten students on each page
@@ -39,10 +53,17 @@ document.addEventListener('DOMContentLoaded', () =>{
     const appendPageLinks = (studentList) => {
 
         //find the number of pages we need for the given student list
-        const numberOfPages = parseInt(studentList.length/maxNumber)+1;
+        let listLength = 0;
+        for (let i=0; i<studentList.length ;i++){
+            listLength += 1;
+        }
+        const numberOfPages = (listLength/maxNumber)+1;
         //selectt the page DIV element
         const pageDiv = document.querySelector('.page');
-
+        const checkDiv = pageDiv.querySelector('.pagination');
+        if(checkDiv){
+            pageDiv.removeChild(checkDiv);
+        }
         //create div to add page links at the bottom using class = 'pagination'
         const div = document.createElement('div');
         div.className = 'pagination';
@@ -57,7 +78,8 @@ document.addEventListener('DOMContentLoaded', () =>{
             const li = document.createElement('li');
             const a = document.createElement('a');
             a.textContent = i.toString();
-            if(i==1){
+            a.href = '#';
+            if(i===1){
                 a.className = 'active';
             }
             ul.appendChild(li);
@@ -80,10 +102,36 @@ document.addEventListener('DOMContentLoaded', () =>{
             });
         }
 
-
-
     };
+    searchButton.addEventListener('click', (e) =>{
+        const searchKey = searchInput.value;
+        const list = ul[0].children;
+        for (let i = 0; i < list.length; i++) {
+            let li = list[i];
+            let sName = li.querySelector('div h3');
+            let studentName = sName.textContent;
+            if(studentName.includes(searchKey)){
+                li.style.display = '';
+
+            }
+            else{
+                li.style.display = 'none';
+            }
+
+        }
+        let newList = [];
+        for (let i = 0; i < list.length; i++) {
+            let li = list[i];
+            if(li.style.display !== 'none'){
+                    newList.push(li);
+            }
+
+        }
+        showPage(newList, 1);
+        appendPageLinks(newList);
+    });
     // to load the first page every time the web page is refreshed
+    const studentList = ul[0].children;
     showPage(studentList, 1);
 
     // to add page links at the bottom of the web page
